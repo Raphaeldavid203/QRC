@@ -119,39 +119,3 @@ Thank you for visiting Quantatria Research Capital! 🚀
 ## 🌐 About Me
 
 Welcome to my personal space on GitHub! I am [Your Name], the brains behind Quantatria Research Capital. With a passion for technology and finance, I specialize in creating cutting-edge quantitative models that integrate seamlessly with modern investment strategies.
-
-## 📈 Apple Stock Visualization
-
-Experience real-time financial insights with our interactive Apple stock chart. Dive deep into market trends with our sleek, user-friendly plot, crafted to ensure you stay ahead in the financial world.
-
-```python
-# This Python script uses Plotly to render an interactive chart of Apple's stock. Ensure you have the necessary libraries installed.
-import yfinance as yf
-import plotly.graph_objects as go
-
-# Fetching data
-data = yf.download('AAPL', start='2023-01-01', end='2023-12-31')
-
-# Creating the figure
-fig = go.Figure(data=[go.Candlestick(x=data.index,
-                open=data['Open'],
-                high=data['High'],
-                low=data['Low'],
-                close=data['Close'])])
-
-# Update layout for dark theme
-fig.update_layout(
-    title='AAPL Stock Price',
-    xaxis_title='Date',
-    yaxis_title='Price',
-    xaxis_rangeslider_visible=False,
-    template="plotly_dark",
-    paper_bgcolor='rgba(30, 30, 30, 1)',  # Dark background color
-    plot_bgcolor='rgba(30, 30, 30, 1)'    # Dark plot background color
-)
-
-fig.show()
-
-
-
-
