@@ -5,9 +5,9 @@ body {
     padding: 0;
     background-color: #f8f9fa;
     color: #343a40;
+    line-height: 1.6;
 }
 
-/* Container */
 .container {
     width: 80%;
     margin: 0 auto;
@@ -50,7 +50,7 @@ nav ul li a:hover {
 
 /* Section Styles */
 .section {
-    padding: 40px 0;
+    padding: 60px 0;
 }
 
 .section:nth-child(odd) {
@@ -80,6 +80,45 @@ nav ul li a:hover {
 
 .section ul li {
     margin-bottom: 10px;
+}
+
+.services {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+}
+
+.service {
+    width: 30%;
+}
+
+.service h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.team {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+}
+
+.member {
+    width: 30%;
+}
+
+.member img {
+    width: 100%;
+    border-radius: 50%;
+}
+
+.member h3 {
+    font-size: 1.5em;
+    margin: 10px 0;
+}
+
+.member p {
+    font-size: 1.1em;
 }
 
 /* Footer Styles */
