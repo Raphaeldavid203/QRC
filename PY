@@ -1,0 +1,38 @@
+import yfinance as yf
+import plotly.graph_objs as go
+import plotly.offline as pyo
+
+# Liste des symboles des actions
+symbols = ['AAPL', 'NVDA', 'PERI', 'INTC']
+
+# Dictionnaire pour stocker les données
+stock_data = {}
+
+# Récupérer les données pour chaque action
+for symbol in symbols:
+    stock_data[symbol] = yf.download(symbol, start="2018-01-01", end="2023-01-01")
+
+# Créer une liste de traces pour le graphique
+traces = []
+
+for symbol in symbols:
+    trace = go.Scatter(
+        x=stock_data[symbol].index,
+        y=stock_data[symbol]['Close'],
+        mode='lines',
+        name=symbol
+    )
+    traces.append(trace)
+
+# Définir la disposition du graphique
+layout = go.Layout(
+    title='Allocation de Apple, Nvidia, Perion et Intel sur 5 ans',
+    xaxis=dict(title='Date'),
+    yaxis=dict(title='Valeur de clôture')
+)
+
+# Créer la figure
+fig = go.Figure(data=traces, layout=layout)
+
+# Sauvegarder le graphique dans un fichier HTML
+pyo.plot(fig, filename='allocation_actions.html')
