@@ -1,38 +1,28 @@
-import yfinance as yf
-import plotly.graph_objs as go
-import plotly.offline as pyo
+import pandas as pd
+import plotly.express as px
 
-# Liste des symboles des actions
-symbols = ['AAPL', 'NVDA', 'PERI', 'INTC']
+# Créer un DataFrame avec les données extraites de l'image
+data = {
+    'Ticker': ['INCY', 'MED', 'CPRX', 'CTRA', 'DBX', 'NIO', 'OPRA', 'AEHR', 'BABA', 'INMD', 'PERI', 'MO', 'INTA'],
+    'Company': [
+        'Incyte Corp.', 'Medifast Inc', 'Catalyst Pharmaceuticals Inc', 'Coterra Energy Inc', 'Dropbox Inc',
+        'NIO Inc ADR', 'Opera Ltd ADR', 'Aehr Test Systems', 'Alibaba Group Holding Ltd ADR', 'Inmode Ltd',
+        'Perion Network Ltd.', 'Altria Group Inc.', 'Intapp Inc'
+    ],
+    'Shares': [1, 4, 1, 1, 2, 10, 4, 8, 2, 2, 16, 1, 1],
+    'Avg Cost': [58.84, 20.85, 16.81, 25.77, 23.63, 5.65, 13.07, 11.97, 72.43, 17.40, 11.26, 40.62, 33.07],
+    'Total Cost': [58.84, 83.38, 16.81, 25.77, 47.26, 56.50, 52.28, 95.76, 144.86, 34.80, 180.16, 40.62, 33.07]
+}
 
-# Dictionnaire pour stocker les données
-stock_data = {}
+df = pd.DataFrame(data)
 
-# Récupérer les données pour chaque action
-for symbol in symbols:
-    stock_data[symbol] = yf.download(symbol, start="2018-01-01", end="2023-01-01")
+# Calculer la répartition en pourcentage
+total_investment = df['Total Cost'].sum()
+df['Percentage'] = (df['Total Cost'] / total_investment) * 100
 
-# Créer une liste de traces pour le graphique
-traces = []
+# Créer un graphique en secteurs (pie chart) pour visualiser la répartition
+fig = px.pie(df, names='Ticker', values='Percentage', title='Répartition du portefeuille par action (%)')
 
-for symbol in symbols:
-    trace = go.Scatter(
-        x=stock_data[symbol].index,
-        y=stock_data[symbol]['Close'],
-        mode='lines',
-        name=symbol
-    )
-    traces.append(trace)
+# Afficher le graphique
+fig.show()
 
-# Définir la disposition du graphique
-layout = go.Layout(
-    title='Allocation de Apple, Nvidia, Perion et Intel sur 5 ans',
-    xaxis=dict(title='Date'),
-    yaxis=dict(title='Valeur de clôture')
-)
-
-# Créer la figure
-fig = go.Figure(data=traces, layout=layout)
-
-# Sauvegarder le graphique dans un fichier HTML
-pyo.plot(fig, filename='allocation_actions.html')
