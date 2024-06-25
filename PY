@@ -1,28 +1,63 @@
+import yfinance as yf
+import plotly.graph_objs as go
 import pandas as pd
-import plotly.express as px
+import plotly.offline as pyo
 
-# Créer un DataFrame avec les données extraites de l'image
-data = {
-    'Ticker': ['INCY', 'MED', 'CPRX', 'CTRA', 'DBX', 'NIO', 'OPRA', 'AEHR', 'BABA', 'INMD', 'PERI', 'MO', 'INTA'],
-    'Company': [
-        'Incyte Corp.', 'Medifast Inc', 'Catalyst Pharmaceuticals Inc', 'Coterra Energy Inc', 'Dropbox Inc',
-        'NIO Inc ADR', 'Opera Ltd ADR', 'Aehr Test Systems', 'Alibaba Group Holding Ltd ADR', 'Inmode Ltd',
-        'Perion Network Ltd.', 'Altria Group Inc.', 'Intapp Inc'
-    ],
-    'Shares': [1, 4, 1, 1, 2, 10, 4, 8, 2, 2, 16, 1, 1],
-    'Avg Cost': [58.84, 20.85, 16.81, 25.77, 23.63, 5.65, 13.07, 11.97, 72.43, 17.40, 11.26, 40.62, 33.07],
-    'Total Cost': [58.84, 83.38, 16.81, 25.77, 47.26, 56.50, 52.28, 95.76, 144.86, 34.80, 180.16, 40.62, 33.07]
-}
+# Liste des symboles des actions et de l'indice S&P 500
+symbols = ['META', 'NVDA', 'AAPL', '^GSPC']
 
-df = pd.DataFrame(data)
+# Dictionnaire pour stocker les données
+stock_data = {}
 
-# Calculer la répartition en pourcentage
-total_investment = df['Total Cost'].sum()
-df['Percentage'] = (df['Total Cost'] / total_investment) * 100
+# Récupérer les données pour chaque action et l'indice
+for symbol in symbols:
+    stock_data[symbol] = yf.download(symbol, start="2018-01-01", end=pd.Timestamp.today())
 
-# Créer un graphique en secteurs (pie chart) pour visualiser la répartition
-fig = px.pie(df, names='Ticker', values='Percentage', title='Répartition du portefeuille par action (%)')
+# Calculer l'évolution cumulée des prix de clôture pour le portefeuille et le S&P 500
+portfolio_data = pd.DataFrame({
+    'META': stock_data['META']['Close'],
+    'NVDA': stock_data['NVDA']['Close'],
+    'AAPL': stock_data['AAPL']['Close']
+})
 
-# Afficher le graphique
-fig.show()
+# Calculer la moyenne pondérée des prix de clôture pour le portefeuille
+portfolio_data['Portfolio'] = portfolio_data.mean(axis=1)
+sp500_data = stock_data['^GSPC']['Close']
+
+# Normaliser les données en prenant une base de 100
+portfolio_data['Portfolio_normalized'] = (portfolio_data['Portfolio'] / portfolio_data['Portfolio'].iloc[0]) * 100
+sp500_data_normalized = (sp500_data / sp500_data.iloc[0]) * 100
+
+# Créer une liste de traces pour le graphique
+traces = []
+
+# Trace pour le portefeuille normalisé
+traces.append(go.Scatter(
+    x=portfolio_data.index,
+    y=portfolio_data['Portfolio_normalized'],
+    mode='lines',
+    name='Portfolio META + NVDA + AAPL'
+))
+
+# Trace pour le S&P 500 normalisé
+traces.append(go.Scatter(
+    x=sp500_data_normalized.index,
+    y=sp500_data_normalized,
+    mode='lines',
+    name='S&P 500'
+))
+
+# Définir la disposition du graphique
+layout = go.Layout(
+    title='Simulation de 100 euros investis dans le portefeuille META + NVDA + AAPL vs S&P 500',
+    xaxis=dict(title='Date'),
+    yaxis=dict(title='Valeur de l\'investissement (base 100)')
+)
+
+# Créer la figure
+fig = go.Figure(data=traces, layout=layout)
+
+# Sauvegarder le graphique dans un fichier HTML
+pyo.plot(fig, filename='portfolio_vs_sp500.html', auto_open=False)
+
 
